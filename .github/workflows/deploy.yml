@@ -1,0 +1,27 @@
+name: Deploy
+
+
+on:
+  push:
+    branches: [main]
+
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH and Deploy
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/my-react-app
+            git pull origin main
+            docker build -t my-react-app .
+            docker stop react-app || true
+            docker rm react-app || true
+            docker run -d --name react-app \
+              --restart always -p 80:80 my-react-app
+
