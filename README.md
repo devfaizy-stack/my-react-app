@@ -14,3 +14,58 @@ The React Compiler is not enabled on this template because of its impact on dev 
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+
+# My React App - DevOps Deployment
+
+## Live Application
+http://ec2-16-16-138-236.eu-north-1.compute.amazonaws.com
+
+## Server Setup
+
+I'm using AWS EC2 with Ubuntu 24.04 in the eu-north-1 region. Port 80 is open for the app and port 22 is open for SSH deployment.
+
+Installed:
+- Docker
+- Nginx (inside container)
+- Git
+- Node.js 20 (upgraded from node v12)
+
+## Docker Build & Run
+
+I used a multi-stage Dockerfile to keep the image small. First stage builds the React app with Node, second stage serves it with Nginx.
+
+```bash
+docker build -t my-react-app .
+docker run -d --name react-app --restart always -p 80:80 my-react-app
+```
+
+The `--restart always` makes sure the container comes back up if the server reboots or if it crashes.
+
+## Nginx Configuration
+
+Nginx runs inside the Docker container.
+
+## CI/CD
+
+I set up GitHub Actions to automatically deploy when I push to main. 
+
+The workflow:
+1. Connects to the server via SSH
+2. Pulls the latest code
+3. Rebuilds the Docker image
+4. Stops the old container and starts a new one
+
+I added three secrets in GitHub:
+- SERVER_IP
+- SERVER_USER
+- SSH_PRIVATE_KEY
+
+The deployment script:
+```bash
+cd ~/my-react-app
+git pull origin main
+sudo docker build -t my-react-app .
+sudo docker rm -f react-app || true
+sudo docker run -d --name react-app --restart always -p 80:80 my-react-app
+```
