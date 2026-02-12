@@ -17,11 +17,9 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd ~/my-react-app
-            git pull origin main
-            docker build -t my-react-app .
-            docker stop react-app || true
-            docker rm react-app || true
-            docker run -d --name react-app \
-              --restart always -p 80:80 my-react-app
+             cd ~/my-react-app
+             git pull origin main
+             sudo docker build -t my-react-app .
+             sudo docker rm -f react-app || true
+             sudo docker run -d --name react-app --restart always -p 80:80 my-react-app
 
