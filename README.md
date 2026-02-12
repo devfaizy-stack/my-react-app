@@ -19,7 +19,7 @@ If you are developing a production application, we recommend using TypeScript wi
 # My React App - DevOps Deployment
 
 ## Live Application
-http://ec2-16-16-138-236.eu-north-1.compute.amazonaws.com
+ec2-13-48-131-104.eu-north-1.compute.amazonaws.com
 
 ## Server Setup
 
